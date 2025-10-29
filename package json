@@ -1,0 +1,14 @@
+{
+  "name": "shrinkme-dashboard-full",
+  "version": "1.0.0",
+  "description": "ShrinkMe dashboard with analytics (in-memory).",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7",
+    "dotenv": "^16.0.3"
+  }
+}
