@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ShrinkMe Dashboard — Jazz</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark">
+  <main class="container">
+    <h1>Jazz — ShrinkMe Dashboard</h1>
+
+    <section class="card">
+      <h2>Add ShrinkMe Link</h2>
+      <label>Alias (e.g. jazz-ep1)</label>
+      <input id="alias" placeholder="alias (no spaces)">
+      <label>ShrinkMe link (or full URL)</label>
+      <input id="link" placeholder="https://shrinkme.io/xxxxx or https://youtube.com/...">
+      <div class="row">
+        <label><input type="checkbox" id="direct"> Ensure Direct Mode</label>
+        <button id="addBtn">Add Link</button>
+      </div>
+      <div id="addResult" class="muted"></div>
+    </section>
+
+    <section class="card">
+      <h2>Quick Shorten (ShrinkMe API)</h2>
+      <label>Destination URL</label>
+      <input id="shortenUrl" placeholder="https://example.com/long">
+      <label>Optional alias</label>
+      <input id="shortenAlias" placeholder="jazzshort1">
+      <button id="shortenBtn">Shorten (API)</button>
+      <div id="shortenResult" class="muted"></div>
+    </section>
+
+    <section class="card">
+      <h2>Links & Stats</h2>
+      <div id="linksList">Loading…</div>
+      <pre id="stats" class="muted"></pre>
+    </section>
+
+    <footer class="muted">Dark theme default • Toggle with the button</footer>
+    <button id="themeToggle" class="themeBtn">Toggle Theme</button>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
