@@ -1,2 +1,3 @@
 SHRINKME_API_KEY=b65d33fb73f93b0b407afa6b8b0ebe39cd464f7e
 PORT=3000
+APP_NAME=shrinkmeio-dashboard
