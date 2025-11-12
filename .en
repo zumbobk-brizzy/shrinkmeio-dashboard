@@ -1,3 +1,11 @@
+# .env
+# Environment variables for ShrinkMe.io Dashboard project
+
+# Your ShrinkMe.io API key (used to connect and shorten URLs)
 SHRINKME_API_KEY=b65d33fb73f93b0b407afa6b8b0ebe39cd464f7e
+
+# Port for local or Render server to run
 PORT=3000
-APP_NAME=shrinkmeio-dashboard
+
+# Node environment mode (production for live deploy)
+NODE_ENV=production
