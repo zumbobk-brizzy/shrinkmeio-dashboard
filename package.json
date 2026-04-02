@@ -1,42 +1,28 @@
-{"express": "~4.17.1",
-"mongoose": "~5.10.9",
-"axios": "~0.21.1",
-"lodash": "~4.17.21",
-"react": "~17.0.2"
+{
   "name": "shrinkmeio-dashboard",
   "version": "1.0.0",
-  "lockfileVersion": 2,
-  "requires": true,
-  "packages": {
-    "": {
-      "name": "shrinkmeio-dashboard",
-      "version": "1.0.0",
-      "license": "MIT",
-      "dependencies": {
-        "dotenv": "^16.3.1",
-        "express": "^4.18.2",
-        "node-fetch": "^2.6.7"
-      }
-    },
-    "node_modules/dotenv": {
-      "version": "16.3.1"
-    },
-    "node_modules/express": {
-      "version": "4.18.2"
-    },
-    "node_modules/node-fetch": {
-      "version": "2.6.7"
-    }
+  "description": "ShrinkMe dashboard for managing monetized links",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "shrinkme",
+    "url-shortener",
+    "dashboard",
+    "analytics",
+    "nodejs",
+    "router",
+    "monetizer"
+  ],
+  "author": "Jazz (Brizzy)",
+  "license": "MIT",
+  "engines": {
+    "node": "18.x"
   },
   "dependencies": {
-    "dotenv": {
-      "version": "16.3.1"
-    },
-    "express": {
-      "version": "4.18.2"
-    },
-    "node-fetch": {
-      "version": "2.6.7"
-    }
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7"
   }
 }
