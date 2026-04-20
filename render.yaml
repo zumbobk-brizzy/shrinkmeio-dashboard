@@ -1,9 +1,6 @@
 services:
   - type: web
     name: shrinkmeio-dashboard
-    env: static
-    staticPublishPath: .
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
