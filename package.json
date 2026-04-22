@@ -11,19 +11,23 @@ app.use(express.static('public'));
 const API_KEY = process.env.SHRINKME_API_KEY || '';
 
 if (!API_KEY) {
-  console.warn('Warning: SHRINKME_API_KEY not set in environment. Set it before deploying.');
+  console.warn('Warning: SHRINKME_API_KEY not set in environment.');
 }
 
-// simple in-memory store for links and stats
-const routes = {}; // alias -> target (short link)
-const stats = {};  // alias -> { clicks: number, countries: {} }
+// Store links and stats
+const routes = {};
+const stats = {};
 
-// Dashboard API: get stats + routes
+// Get dashboard stats
 app.get('/api/stats', (req, res) => {
-  res.json({ ok: true, stats, routes });
+  res.json({
+    ok: true,
+    stats,
+    routes
+  });
 });
 
-// Add a link via POST from dashboard
+// Add new link
 app.post('/api/add', (req, res) => {
   const { alias, link } = req.body;
 
@@ -34,7 +38,6 @@ app.post('/api/add', (req, res) => {
     });
   }
 
-  // Ensure direct=1 present to reduce redirects
   let modified = link;
 
   if (!/(&|\?)direct=1/.test(link)) {
@@ -42,6 +45,7 @@ app.post('/api/add', (req, res) => {
   }
 
   routes[alias] = modified;
+
   stats[alias] = stats[alias] || {
     clicks: 0,
     countries: {}
@@ -54,25 +58,19 @@ app.post('/api/add', (req, res) => {
   });
 });
 
-// Redirect endpoint
-app.get('/:alias', async (req, res) => {
+// Redirect links
+app.get('/:alias', (req, res) => {
   const alias = req.params.alias;
   const target = routes[alias];
 
-  // if alias does not exist, send homepage
+  // If missing alias, send homepage
   if (!target) {
     return res.sendFile(path.join(__dirname, 'public', 'index.html'));
   }
 
-  // record click
-  stats[alias] = stats[alias] || {
-    clicks: 0,
-    countries: {}
-  };
-
+  // Record click
   stats[alias].clicks += 1;
 
-  // country detection
   const country =
     req.headers['cf-ipcountry'] ||
     req.headers['x-country'] ||
@@ -81,11 +79,10 @@ app.get('/:alias', async (req, res) => {
   stats[alias].countries[country] =
     (stats[alias].countries[country] || 0) + 1;
 
-  // redirect
   return res.redirect(302, target);
 });
 
-// ShrinkMe API proxy shorten
+// ShrinkMe shorten API
 app.post('/api/shorten', async (req, res) => {
   const { url, alias } = req.body;
 
@@ -110,9 +107,7 @@ app.post('/api/shorten', async (req, res) => {
       ok: true,
       short: text
     });
-  } catch (err) {
-    console.error(err);
-
+  } catch (error) {
     return res.status(500).json({
       ok: false,
       error: 'api failed'
@@ -120,7 +115,7 @@ app.post('/api/shorten', async (req, res) => {
   }
 });
 
-// catch-all fallback
+// Catch-all fallback
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -128,5 +123,5 @@ app.get('*', (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log('Server running on port', PORT);
+  console.log(`Server running on port ${PORT}`);
 });
