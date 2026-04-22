@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const fetch = require('node-fetch');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 
@@ -9,22 +10,29 @@ app.use(express.json());
 app.use(express.static('public'));
 
 const API_KEY = process.env.SHRINKME_API_KEY || '';
+const dataFile = path.join(__dirname, 'data.json');
 
-if (!API_KEY) {
-  console.warn('Warning: SHRINKME_API_KEY not set in environment.');
+let routes = {};
+let stats = {};
+
+// Load saved data on startup
+if (fs.existsSync(dataFile)) {
+  const saved = JSON.parse(fs.readFileSync(dataFile, 'utf8'));
+  routes = saved.routes || {};
+  stats = saved.stats || {};
 }
 
-// Store links and stats
-const routes = {};
-const stats = {};
+// Save helper
+function saveData() {
+  fs.writeFileSync(
+    dataFile,
+    JSON.stringify({ routes, stats }, null, 2)
+  );
+}
 
-// Get dashboard stats
+// Dashboard stats
 app.get('/api/stats', (req, res) => {
-  res.json({
-    ok: true,
-    stats,
-    routes
-  });
+  res.json({ ok: true, stats, routes });
 });
 
 // Add new link
@@ -38,6 +46,22 @@ app.post('/api/add', (req, res) => {
     });
   }
 
+  // Alias validation
+  if (!/^[a-zA-Z0-9_-]+$/.test(alias)) {
+    return res.status(400).json({
+      ok: false,
+      error: 'invalid alias'
+    });
+  }
+
+  // Prevent duplicates
+  if (routes[alias]) {
+    return res.status(400).json({
+      ok: false,
+      error: 'alias already exists'
+    });
+  }
+
   let modified = link;
 
   if (!/(&|\?)direct=1/.test(link)) {
@@ -45,11 +69,9 @@ app.post('/api/add', (req, res) => {
   }
 
   routes[alias] = modified;
+  stats[alias] = { clicks: 0, countries: {} };
 
-  stats[alias] = stats[alias] || {
-    clicks: 0,
-    countries: {}
-  };
+  saveData();
 
   return res.json({
     ok: true,
@@ -58,17 +80,15 @@ app.post('/api/add', (req, res) => {
   });
 });
 
-// Redirect links
+// Redirect alias
 app.get('/:alias', (req, res) => {
   const alias = req.params.alias;
   const target = routes[alias];
 
-  // If missing alias, send homepage
   if (!target) {
     return res.sendFile(path.join(__dirname, 'public', 'index.html'));
   }
 
-  // Record click
   stats[alias].clicks += 1;
 
   const country =
@@ -79,7 +99,31 @@ app.get('/:alias', (req, res) => {
   stats[alias].countries[country] =
     (stats[alias].countries[country] || 0) + 1;
 
+  saveData();
+
   return res.redirect(302, target);
+});
+
+// Delete alias
+app.delete('/api/delete/:alias', (req, res) => {
+  const alias = req.params.alias;
+
+  if (!routes[alias]) {
+    return res.status(404).json({
+      ok: false,
+      error: 'alias not found'
+    });
+  }
+
+  delete routes[alias];
+  delete stats[alias];
+
+  saveData();
+
+  return res.json({
+    ok: true,
+    message: 'deleted'
+  });
 });
 
 // ShrinkMe shorten API
